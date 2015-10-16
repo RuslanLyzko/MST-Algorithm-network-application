@@ -1,0 +1,17 @@
+﻿<Window x:Class="MinSpanTreeWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="440" Width="679">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="352*" />
+        </Grid.RowDefinitions>
+        <Button Content="Find Minimum Span Tree" Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="findMinSpanTreeBtn" VerticalAlignment="Top" Width="130" Click="findMinSpanTreeBtn_Click" />
+        <Button Content="Restart" Height="23" HorizontalAlignment="Right" Margin="0,12,12,0" Name="restartBtn" VerticalAlignment="Top" Width="75" Click="restartBtn_Click" />
+        <Button Content="Clear" Height="23" HorizontalAlignment="Right" Margin="0,12,93,0" Name="clearBtn" VerticalAlignment="Top" Width="75" Click="clearBtn_Click" />
+        <StatusBar Grid.Row="1" Height="25" Name="statusBar1" VerticalAlignment="Bottom" />
+        <Canvas Background="WhiteSmoke" Grid.Row="1" Margin="0,0,0,23" Name="drawingCanvas" SnapsToDevicePixels="True" MouseUp="drawingCanvas_MouseUp" />
+        <Label Content="Click on the canvas to create a node." Grid.Row="1" Height="25" HorizontalAlignment="Left" Name="statusLabel" VerticalAlignment="Bottom" />
+    </Grid>
+</Window>
