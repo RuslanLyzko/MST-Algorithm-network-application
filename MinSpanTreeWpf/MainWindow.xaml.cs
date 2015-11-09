@@ -348,38 +348,38 @@ namespace MinSpanTreeWpf
 
         private void LaunchMinSpanTreeTask()
         {
-            Task.Factory.StartNew(() =>
-                FindMinSpanTree()
-                )
-                .ContinueWith((task) =>
-                {
-                    foreach (Edge e in _mst)
-                    {
-                        e.Visited = true;
-                        PaintEdge(e);
-                        PaintNode(e.FirstNode);
-                        PaintNode(e.SecondNode);
-                    }
+            var mst = FindMinSpanTree(new Node_Edge_Clusters
+            {
+                Clusters = _clusters,
+                Edges = _edges,
+                Nodes = _nodes
+            });
 
-                    statusLabel.Content = "Total cost: " + task.Result.ToString("n0");
-                },
-                TaskScheduler.FromCurrentSynchronizationContext());
+            foreach (Edge edge in mst)
+            {
+                edge.Visited = true;
+                PaintEdge(edge);
+                PaintNode(edge.FirstNode);
+                PaintNode(edge.SecondNode);
+            }
         }
 
         /// <summary>
         /// The method for finding the min span tree
         /// </summary>
-        private double FindMinSpanTree()
+        private List<Edge> FindMinSpanTree(Node_Edge_Clusters inputData)
         {
-            _mst.Clear();
-            //the forest contains all visited nodes
-            List<Node> forest = new List<Node>();
-            //sort the edges by their length
-            _edges.Sort();
-            double totalCost = 0;
-            foreach (Edge currentEdge in _edges)
+            var result = new List<Edge>();
+
+            // the forest contains all visited nodes
+            // List<Node> forest = new List<Node>();
+
+            // sort the edges by their length
+            inputData.Edges.Sort();
+            
+            foreach (Edge currentEdge in inputData.Edges)
             {
-                if (_clusters.Count == 1)
+                if (inputData.Clusters.Count == 1)
                     break;
 
                 Cluster cluster1 = currentEdge.FirstNode.Cluster;
@@ -387,34 +387,28 @@ namespace MinSpanTreeWpf
 
                 if (cluster1.Label != cluster2.Label)
                 {
-                    _mst.Add(currentEdge);
-                    //add the length to the total cost
-                    totalCost += currentEdge.Length;
+                    result.Add(currentEdge);
+                    
+                    // add the length to the total cost
+                    // totalCost += currentEdge.Length;
+
                     currentEdge.FirstNode.Visited = true;
                     currentEdge.SecondNode.Visited = true;
-                    //merge clusters in a single one
-                    MergeClusters(cluster1, cluster2);
+
+                    // merge two cluster and make a single one of them
+                    List<Node> nodeList = cluster2.GetNodeList();
+                    foreach (Node n in nodeList)
+                    {
+                        cluster1.AddNode(n);
+                        n.Cluster = cluster1;
+                    }
+
+                    inputData.Clusters.Remove(cluster2);
                 }
             }
 
-            return totalCost;
-        }
-
-        /// <summary>
-        /// Merge two cluster and make a single one of them
-        /// </summary>
-        /// <param name="cluster1">First Cluster</param>
-        /// <param name="cluster2">Second Cluster</param>
-        private void MergeClusters(Cluster cluster1, Cluster cluster2)
-        {
-            List<Node> nodeList = cluster2.GetNodeList();
-            foreach (Node n in nodeList)
-            {
-                cluster1.AddNode(n);
-                n.Cluster = cluster1;
-            }
-
-            _clusters.Remove(cluster2);
+            return result;
+            // return totalCost;
         }
 
         private void PaintAllNodes()
