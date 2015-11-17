@@ -64,7 +64,12 @@ namespace MinSpanTreeWpf
                         double distance = GetEdgeDistance();
                         if (distance != 0.0)
                         {
-                            Edge edge = CreateEdge(_edgeNode1, _edgeNode2, distance);
+                            var edge = new Edge
+                            {
+                                FirstNode = _edgeNode1,
+                                SecondNode = _edgeNode2,
+                                Length = distance
+                            };
                             _edges.Add(edge);
                             PaintEdge(edge);
                         }
@@ -155,13 +160,10 @@ namespace MinSpanTreeWpf
         /// <returns>The distance value specified by the user</returns>
         private double GetEdgeDistance()
         {
-            double distance = 0.0;
             DistanceDialog dd = new DistanceDialog();
             dd.Owner = this;
-
             dd.ShowDialog();
-            distance = dd.Distance;
-
+            var distance = dd.Distance;
             return distance;
         }
         /// <summary>
@@ -258,11 +260,6 @@ namespace MinSpanTreeWpf
 
             //add to canvas on top of the cirle
             drawingCanvas.Children.Add(tb);
-        }
-
-        private Edge CreateEdge(Node node1, Node node2, double distance)
-        {
-            return new Edge(node1, node2, distance);
         }
 
         private void PaintEdge(Edge edge)

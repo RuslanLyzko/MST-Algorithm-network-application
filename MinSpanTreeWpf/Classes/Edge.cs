@@ -7,18 +7,9 @@ namespace MinSpanTreeWpf.Classes
 {
     public class Edge : IComparable<Edge>
     {
-        public Edge(Node firstNode, Node secondNode)
+        public Edge()
         {
-            FirstNode = firstNode;
-            SecondNode = secondNode;
-
             Visited = false;
-        }
-
-        public Edge(Node firstNode, Node secondNode, double length)
-            : this(firstNode, secondNode)
-        {
-            Length = length;
         }
 
         public Node FirstNode { get; set; }
