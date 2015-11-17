@@ -29,7 +29,6 @@ namespace MinSpanTreeWpf
 
         private List<Node> _nodes;
         private List<Edge> _edges;
-        private List<Edge> _mst;
         private List<Cluster> _clusters;
 
         private Node _edgeNode1, _edgeNode2;
@@ -45,7 +44,6 @@ namespace MinSpanTreeWpf
             _nodes = new List<Node>();
             _edges = new List<Edge>();
 
-            _mst = new List<Edge>();
             _clusters = new List<Cluster>();
 
             _count = 1;
@@ -421,17 +419,15 @@ namespace MinSpanTreeWpf
 
         private void Clear()
         {
-            this._nodes.Clear();
-            this._edges.Clear();
-            this._mst.Clear();
-            this._clusters.Clear();
-            this._count = 1;
+            _nodes.Clear();
+            _edges.Clear();
+            _clusters.Clear();
+            _count = 1;
         }
 
         private void Restart()
         {
-            this._mst.Clear();
-            this._clusters.Clear();
+            _clusters.Clear();
 
             foreach (Node n in _nodes)
             {
