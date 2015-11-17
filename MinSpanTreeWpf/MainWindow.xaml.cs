@@ -343,11 +343,7 @@ namespace MinSpanTreeWpf
         private void findMinSpanTreeBtn_Click(object sender, RoutedEventArgs e)
         {
             statusLabel.Content = "Calculating...";
-            LaunchMinSpanTreeTask();
-        }
 
-        private void LaunchMinSpanTreeTask()
-        {
             var mst = FindMinSpanTree(new Node_Edge_Clusters
             {
                 Clusters = _clusters,
