@@ -7,18 +7,13 @@ namespace MinSpanTreeWpf.Classes
 {
     public class Cluster
     {
-        private List<Node> _nodes;
-        private string _label;
+        private readonly List<Node> _nodes;
 
-        public Cluster(string label)
-        {
-            this._nodes = new List<Node>();
-            this._label = label;
-        }
+        public string Label { get; set; }
 
-        public bool HasNode(Node node)
+        public Cluster()
         {
-            return _nodes.Contains(node);
+            _nodes = new List<Node>();
         }
 
         public void AddNode(Node node)
@@ -27,25 +22,6 @@ namespace MinSpanTreeWpf.Classes
             {
                 _nodes.Add(node);
                 node.Cluster = this;
-            }
-        }
-
-        public string Label
-        {
-            get { return this._label; }
-            set { this._label = value; }
-        }
-
-        public void Remove(Node node)
-        {
-            _nodes.Remove(node);
-        }
-
-        public void AddNodeList(List<Node> nodeList)
-        {
-            foreach (Node n in nodeList)
-            {
-                AddNode(n);
             }
         }
 

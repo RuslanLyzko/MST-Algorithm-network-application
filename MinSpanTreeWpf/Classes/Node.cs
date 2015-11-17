@@ -8,77 +8,47 @@ namespace MinSpanTreeWpf.Classes
 {
     public class Node
     {
-        private Point _drawingLocation;
         private Point _center;
-        private string _label;
-        private double _diameter;
-        private const int _fontSize = 10;
-        
-        private bool _visited;
-
-        private Cluster _cluster;
-        private double _totalCost;
-        private Edge _edgeVisitor;
+        private readonly double _diameter;
 
         public Node(Point location, string label, double diameter)
         {
-            this._drawingLocation = location;
-            this._label = label;
-            this._diameter = diameter;
-            this._cluster = new Cluster(label);
-            _visited = false;
+            _diameter = diameter;
+            Location = location;
+            Label = label;
+            Cluster = new Cluster {Label = label};
+            Visited = false;
         }
 
         public Node(Point location, Point center, string label, double diameter)
             :this(location,label,diameter)
         {
-            this._center = center;
+            _center = center;
         }
 
         public Node(Point location, Point center, string label, double diameter, Cluster cluster)
             :this(location,center,label,diameter)
         {
-            this._cluster = cluster;
+            Cluster = cluster;
         }
 
-        public Point Location
-        {
-            get { return _drawingLocation; }
-        }
+        public Point Location { get; }
 
         public Point Center
         {
             get { return _center; }
-            set { this._center = value; }
+            set { _center = value; }
         }
 
-        public double Diameter
-        {
-            get { return _diameter; }
-        }
+        public double Diameter => _diameter;
 
-        public string Label
-        {
-            get { return _label; }
-        }
+        public string Label { get; }
 
-        public Cluster Cluster
-        {
-            get{ return _cluster; }
-            set{ this._cluster = value; }
-        }
+        public Cluster Cluster { get; set; }
 
-        public double TotalCost
-        {
-            get { return _totalCost; }
-            set { this._totalCost = value; }
-        }
+        public double TotalCost { get; set; }
 
-        public Edge EdgeVisitor
-        {
-            get { return _edgeVisitor; }
-            set { this._edgeVisitor = value; }
-        }
+        public Edge EdgeVisitor { get; set; }
 
         /// <summary>
         /// Calculates whether the node contains a specific point.
@@ -94,10 +64,6 @@ namespace MinSpanTreeWpf.Classes
             return (dist <= (_diameter/2));
         }
 
-        public bool Visited
-        {
-            get { return _visited; }
-            set { this._visited = value; }
-        }
+        public bool Visited { get; set; }
     }
 }

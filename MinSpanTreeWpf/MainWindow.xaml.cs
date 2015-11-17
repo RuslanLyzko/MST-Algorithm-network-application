@@ -29,8 +29,7 @@ namespace MinSpanTreeWpf
 
         private List<Node> _nodes;
         private List<Edge> _edges;
-        private List<Cluster> _clusters;
-
+        
         private Node _edgeNode1, _edgeNode2;
         private SolidColorBrush _unvisitedBrush, _visitedBrush;
         private int _count;
@@ -43,8 +42,6 @@ namespace MinSpanTreeWpf
 
             _nodes = new List<Node>();
             _edges = new List<Edge>();
-
-            _clusters = new List<Cluster>();
 
             _count = 1;
 
@@ -213,12 +210,18 @@ namespace MinSpanTreeWpf
             double nodeCenterX = p.X - _diameter / 2;
             double nodeCenterY = p.Y - _diameter / 2;
             Node newNode = new Node(new Point(nodeCenterX, nodeCenterY), p, _count.ToString(), _diameter);
-            Cluster c = new Cluster(newNode.Label);
-            c.AddNode(newNode);
-            newNode.Cluster = c;
-            _clusters.Add(c);
+
+            CreateCluster(newNode);
 
             return newNode;
+        }
+
+
+        private Cluster CreateCluster(Node node)
+        {
+            node.Cluster = new Cluster {Label = node.Label};
+            node.Cluster.AddNode(node);
+            return node.Cluster;
         }
 
         /// <summary>
@@ -344,7 +347,6 @@ namespace MinSpanTreeWpf
 
             var mst = FindMinSpanTree(new Node_Edge_Clusters
             {
-                Clusters = _clusters,
                 Edges = _edges,
                 Nodes = _nodes
             });
@@ -368,12 +370,17 @@ namespace MinSpanTreeWpf
             // the forest contains all visited nodes
             // List<Node> forest = new List<Node>();
 
+            var clusters = inputData.Nodes
+                .Select(p => p.Cluster)
+                .Distinct()
+                .ToList();
+
             // sort the edges by their length
             inputData.Edges.Sort();
             
             foreach (Edge currentEdge in inputData.Edges)
             {
-                if (inputData.Clusters.Count == 1)
+                if (clusters.Count == 1)
                     break;
 
                 Cluster cluster1 = currentEdge.FirstNode.Cluster;
@@ -397,7 +404,7 @@ namespace MinSpanTreeWpf
                         n.Cluster = cluster1;
                     }
 
-                    inputData.Clusters.Remove(cluster2);
+                    clusters.Remove(cluster2);
                 }
             }
 
@@ -421,23 +428,16 @@ namespace MinSpanTreeWpf
         {
             _nodes.Clear();
             _edges.Clear();
-            _clusters.Clear();
             _count = 1;
         }
 
         private void Restart()
         {
-            _clusters.Clear();
-
-            foreach (Node n in _nodes)
+            foreach (Node node in _nodes)
             {
-                n.Visited = false;
+                node.Visited = false;
                 //create a new cluster
-                n.Cluster = new Cluster(n.Label);
-                //set the point to the cluster
-                n.Cluster.AddNode(n);
-                //add the node to the cluster
-                _clusters.Add(n.Cluster);
+                CreateCluster(node);
             }
 
             foreach (Edge e in _edges)
