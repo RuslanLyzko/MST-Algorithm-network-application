@@ -211,7 +211,13 @@ namespace MinSpanTreeWpf
         {
             double nodeCenterX = p.X - _diameter / 2;
             double nodeCenterY = p.Y - _diameter / 2;
-            Node newNode = new Node(new Point(nodeCenterX, nodeCenterY), p, _count.ToString(), _diameter);
+            var newNode = new Node
+            {
+                Location = new Point(nodeCenterX, nodeCenterY),
+                Center = p,
+                Label = _count.ToString(),
+                Diameter = _diameter
+            };
 
             CreateCluster(newNode);
 
@@ -355,6 +361,8 @@ namespace MinSpanTreeWpf
                 PaintNode(edge.FirstNode);
                 PaintNode(edge.SecondNode);
             }
+
+            statusLabel.Content = "Click on the canvas to create a node.";
         }
 
         /// <summary>
