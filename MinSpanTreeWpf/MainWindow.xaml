@@ -13,5 +13,7 @@
         <StatusBar Grid.Row="1" Height="25" Name="statusBar1" VerticalAlignment="Bottom" />
         <Canvas Background="WhiteSmoke" Grid.Row="1" Margin="0,0,0,23" Name="drawingCanvas" SnapsToDevicePixels="True" MouseUp="drawingCanvas_MouseUp" />
         <Label Content="Click on the canvas to create a node." Grid.Row="1" Height="25" HorizontalAlignment="Left" Name="statusLabel" VerticalAlignment="Bottom" />
+        <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="277,12,0,0" VerticalAlignment="Top" Width="75" Click="btnSave_Click" />
+        <Button x:Name="btnLoad" Content="Load" HorizontalAlignment="Left" Margin="375,12,0,0" VerticalAlignment="Top" Width="75" Click="btnLoad_Click"/>
     </Grid>
 </Window>

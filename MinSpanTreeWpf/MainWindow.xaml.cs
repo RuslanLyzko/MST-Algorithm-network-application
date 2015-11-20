@@ -21,32 +21,26 @@ namespace MinSpanTreeWpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string FILE_NAME = @"data.json";
+
         private const double _diameter = 30;
         private const double _edgeLabelSize = 20;
 
         private const int _fontSize = 12;
         private const int _edgeFontSize = 10;
 
-        private List<Node> _nodes;
-        private List<Edge> _edges;
+        private List<Node> _nodes = new List<Node>();
+        private List<Edge> _edges = new List<Edge>();
         
         private Node _edgeNode1, _edgeNode2;
-        private SolidColorBrush _unvisitedBrush, _visitedBrush;
-        private int _count;
+        private readonly SolidColorBrush _unvisitedBrush = new SolidColorBrush(Colors.Black);
+        private readonly SolidColorBrush _visitedBrush = new SolidColorBrush(Colors.DarkViolet);
 
         public MainWindow()
         {
             InitializeComponent();
 
             drawingCanvas.SetValue(Canvas.ZIndexProperty, 0);
-
-            _nodes = new List<Node>();
-            _edges = new List<Edge>();
-
-            _count = 1;
-
-            _unvisitedBrush = new SolidColorBrush(Colors.Black);
-            _visitedBrush = new SolidColorBrush(Colors.DarkViolet);
         }
 
         private void drawingCanvas_MouseUp(object sender, MouseButtonEventArgs e)
@@ -83,7 +77,6 @@ namespace MinSpanTreeWpf
                         Node n = CreateNode(clickPoint);
                         _nodes.Add(n);
                         PaintNode(n);
-                        _count++;
                         ClearEdgeNodes();
                     }
                 }
@@ -211,27 +204,18 @@ namespace MinSpanTreeWpf
         {
             double nodeCenterX = p.X - _diameter / 2;
             double nodeCenterY = p.Y - _diameter / 2;
+
             var newNode = new Node
             {
                 Location = new Point(nodeCenterX, nodeCenterY),
                 Center = p,
-                Label = _count.ToString(),
+                Label = (_nodes.Count + 1).ToString(),
                 Diameter = _diameter
             };
 
-            CreateCluster(newNode);
-
             return newNode;
         }
-
-
-        private Cluster CreateCluster(Node node)
-        {
-            node.Cluster = new Cluster {Label = node.Label};
-            node.Cluster.AddNode(node);
-            return node.Cluster;
-        }
-
+        
         /// <summary>
         /// Paint a single node on the canvas
         /// </summary>
@@ -348,7 +332,7 @@ namespace MinSpanTreeWpf
         {
             statusLabel.Content = "Calculating...";
 
-            var mst = FindMinSpanTree(new Node_Edge_Clusters
+            var mst = FindMinSpanTree(new NodesWithEdges
             {
                 Edges = _edges,
                 Nodes = _nodes
@@ -368,12 +352,18 @@ namespace MinSpanTreeWpf
         /// <summary>
         /// The method for finding the min span tree
         /// </summary>
-        private List<Edge> FindMinSpanTree(Node_Edge_Clusters inputData)
+        private List<Edge> FindMinSpanTree(NodesWithEdges inputData)
         {
             var result = new List<Edge>();
 
             // the forest contains all visited nodes
             // List<Node> forest = new List<Node>();
+
+            foreach (var node in inputData.Nodes)
+            {
+                node.Cluster = new Cluster { Label = node.Label };
+                node.Cluster.AddNode(node);
+            }
 
             var clusters = inputData.Nodes
                 .Select(p => p.Cluster)
@@ -429,37 +419,57 @@ namespace MinSpanTreeWpf
                 PaintEdge(e);
         }
 
-        private void Clear()
+        private void PaintAll()
         {
-            _nodes.Clear();
-            _edges.Clear();
-            _count = 1;
+            PaintAllNodes();
+            PaintAllEdges();
         }
 
-        private void Restart()
+        private void ResetVisitedFlag()
         {
             foreach (Node node in _nodes)
             {
                 node.Visited = false;
-                //create a new cluster
-                CreateCluster(node);
             }
 
             foreach (Edge e in _edges)
                 e.Visited = false;
         }
 
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            FileStoreHelper.SaveToFile(FILE_NAME, new NodesWithEdges
+            {
+                Nodes = _nodes,
+                Edges = _edges
+            });
+        }
+
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            var nodesWithEdges = FileStoreHelper.LoadFromFile(FILE_NAME);
+
+            drawingCanvas.Children.Clear();
+
+            _nodes = nodesWithEdges.Nodes;
+            _edges = nodesWithEdges.Edges;
+
+            ResetVisitedFlag();
+            PaintAll();
+        }
+
         private void clearBtn_Click(object sender, RoutedEventArgs e)
         {
-            Clear();
+            _nodes.Clear();
+            _edges.Clear();
+            
             drawingCanvas.Children.Clear();
         }
 
         private void restartBtn_Click(object sender, RoutedEventArgs e)
         {
-            Restart();
-            PaintAllNodes();
-            PaintAllEdges();
+            ResetVisitedFlag();
+            PaintAll();
         }
     }
 }

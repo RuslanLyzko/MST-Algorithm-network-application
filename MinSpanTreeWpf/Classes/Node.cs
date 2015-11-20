@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using Newtonsoft.Json;
 
 namespace MinSpanTreeWpf.Classes
 {
@@ -21,6 +22,7 @@ namespace MinSpanTreeWpf.Classes
 
         public string Label { get; set; }
 
+        [JsonIgnore]
         public Cluster Cluster { get; set; }
 
         public double TotalCost { get; set; }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MinSpanTreeWpf.Classes
 {
-    public class Node_Edge_Clusters
+    public class NodesWithEdges
     {
         public List<Node> Nodes { get; set; }
 
