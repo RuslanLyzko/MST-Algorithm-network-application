@@ -34,7 +34,9 @@ namespace MinSpanTreeWpf
         
         private Node _edgeNode1, _edgeNode2;
         private readonly SolidColorBrush _unvisitedBrush = new SolidColorBrush(Colors.Black);
-        private readonly SolidColorBrush _visitedBrush = new SolidColorBrush(Colors.DarkViolet);
+        private SolidColorBrush _visitedBrush = new SolidColorBrush(Colors.DarkViolet);
+
+        private int _offset = 0;
 
         public MainWindow()
         {
@@ -207,9 +209,9 @@ namespace MinSpanTreeWpf
 
             var newNode = new Node
             {
+                NodeId = _nodes.Count + 1,
                 Location = new Point(nodeCenterX, nodeCenterY),
                 Center = p,
-                Label = (_nodes.Count + 1).ToString(),
                 Diameter = _diameter
             };
 
@@ -232,8 +234,11 @@ namespace MinSpanTreeWpf
             ellipse.Width = _diameter;
             ellipse.Height = _diameter;
 
-            ellipse.SetValue(Canvas.LeftProperty, node.Location.X);
-            ellipse.SetValue(Canvas.TopProperty, node.Location.Y);
+            double x = node.Location.X + _offset;
+            double y = node.Location.Y + _offset;
+
+            ellipse.SetValue(Canvas.LeftProperty, x);
+            ellipse.SetValue(Canvas.TopProperty, y);
             ellipse.SetValue(Canvas.ZIndexProperty, 2);
             //add to the canvas
             drawingCanvas.Children.Add(ellipse);
@@ -256,11 +261,11 @@ namespace MinSpanTreeWpf
         {
             //draw the edge
             Line line = new Line();
-            line.X1 = edge.FirstNode.Center.X;
-            line.X2 = edge.SecondNode.Center.X;
+            line.X1 = edge.FirstNode.Center.X + _offset;
+            line.X2 = edge.SecondNode.Center.X + _offset;
 
-            line.Y1 = edge.FirstNode.Center.Y;
-            line.Y2 = edge.SecondNode.Center.Y;
+            line.Y1 = edge.FirstNode.Center.Y + _offset;
+            line.Y2 = edge.SecondNode.Center.Y + _offset;
 
             if (edge.Visited)
                 line.Stroke = _visitedBrush;
@@ -334,13 +339,12 @@ namespace MinSpanTreeWpf
 
             var mst = FindMinSpanTree(new NodesWithEdges
             {
-                Edges = _edges,
-                Nodes = _nodes
+                Nodes = _nodes,
+                Edges = _edges
             });
 
             foreach (Edge edge in mst)
             {
-                edge.Visited = true;
                 PaintEdge(edge);
                 PaintNode(edge.FirstNode);
                 PaintNode(edge.SecondNode);
@@ -384,10 +388,11 @@ namespace MinSpanTreeWpf
                 if (cluster1.Label != cluster2.Label)
                 {
                     result.Add(currentEdge);
-                    
+
                     // add the length to the total cost
                     // totalCost += currentEdge.Length;
 
+                    currentEdge.Visited = true;
                     currentEdge.FirstNode.Visited = true;
                     currentEdge.SecondNode.Visited = true;
 
@@ -464,6 +469,42 @@ namespace MinSpanTreeWpf
             _edges.Clear();
             
             drawingCanvas.Children.Clear();
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            Action<HashSet<int>> action = nodeIds =>
+            {
+                var nodes = _nodes
+                    .Where(p => nodeIds.Contains(p.NodeId))
+                    .ToList();
+                var edges = _edges
+                    .Where(p => nodeIds.Contains(p.FirstNode.NodeId) && nodeIds.Contains(p.SecondNode.NodeId))
+                    .ToList();
+
+                var mst = FindMinSpanTree(new NodesWithEdges
+                {
+                    Nodes = nodes,
+                    Edges = edges
+                });
+
+                foreach (Edge edge in mst)
+                {
+                    PaintEdge(edge);
+                    PaintNode(edge.FirstNode);
+                    PaintNode(edge.SecondNode);
+                }
+            };
+
+            _visitedBrush = new SolidColorBrush(Colors.Red);
+            action(new HashSet<int> {2, 5, 6, 7, 8});
+
+            _offset = 3;
+
+            _visitedBrush = new SolidColorBrush(Colors.Chartreuse);
+            action(new HashSet<int> {1, 2, 3, 4});
+
+            _offset = 0;
         }
 
         private void restartBtn_Click(object sender, RoutedEventArgs e)

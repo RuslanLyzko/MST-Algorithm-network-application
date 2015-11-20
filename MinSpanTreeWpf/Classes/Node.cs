@@ -14,13 +14,15 @@ namespace MinSpanTreeWpf.Classes
             Visited = false;
         }
 
+        public int NodeId { get; set; }
+
         public Point Location { get; set; }
 
         public Point Center { get; set; }
 
         public double Diameter { get; set; }
 
-        public string Label { get; set; }
+        public string Label => NodeId.ToString();
 
         [JsonIgnore]
         public Cluster Cluster { get; set; }

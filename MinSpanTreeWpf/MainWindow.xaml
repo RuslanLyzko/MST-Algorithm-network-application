@@ -7,13 +7,14 @@
             <RowDefinition Height="50" />
             <RowDefinition Height="352*" />
         </Grid.RowDefinitions>
-        <Button Content="Find MST" Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="findMinSpanTreeBtn" VerticalAlignment="Top" Width="130" Click="findMinSpanTreeBtn_Click" />
-        <Button Content="Restart" Height="23" HorizontalAlignment="Right" Margin="0,12,12,0" Name="restartBtn" VerticalAlignment="Top" Width="75" Click="restartBtn_Click" />
-        <Button Content="Clear" Height="23" HorizontalAlignment="Right" Margin="0,12,93,0" Name="clearBtn" VerticalAlignment="Top" Width="75" Click="clearBtn_Click" />
+        <Button Content="Find MST" Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" Name="findMinSpanTreeBtn" VerticalAlignment="Top" Width="109" Click="findMinSpanTreeBtn_Click" />
+        <Button Content="Reset" Height="23" HorizontalAlignment="Left" Margin="129,12,0,0" Name="restartBtn" VerticalAlignment="Top" Width="75" Click="restartBtn_Click" />
+        <Button Content="Clear" Height="23" HorizontalAlignment="Right" Margin="0,12,10,0" Name="clearBtn" VerticalAlignment="Top" Width="75" Click="clearBtn_Click" />
         <StatusBar Grid.Row="1" Height="25" Name="statusBar1" VerticalAlignment="Bottom" />
         <Canvas Background="WhiteSmoke" Grid.Row="1" Margin="0,0,0,23" Name="drawingCanvas" SnapsToDevicePixels="True" MouseUp="drawingCanvas_MouseUp" />
         <Label Content="Click on the canvas to create a node." Grid.Row="1" Height="25" HorizontalAlignment="Left" Name="statusLabel" VerticalAlignment="Bottom" />
-        <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="277,12,0,0" VerticalAlignment="Top" Width="75" Click="btnSave_Click" />
+        <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="295,12,0,0" VerticalAlignment="Top" Width="75" Click="btnSave_Click" />
         <Button x:Name="btnLoad" Content="Load" HorizontalAlignment="Left" Margin="375,12,0,0" VerticalAlignment="Top" Width="75" Click="btnLoad_Click"/>
+        <Button x:Name="button" Content="Test" HorizontalAlignment="Left" Margin="489,12,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
     </Grid>
 </Window>
