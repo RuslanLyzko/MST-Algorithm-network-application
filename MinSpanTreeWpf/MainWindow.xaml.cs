@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading.Tasks;
 using MinSpanTreeWpf.Classes;
+using System.Collections.ObjectModel;
 
 namespace MinSpanTreeWpf
 {
@@ -21,6 +22,7 @@ namespace MinSpanTreeWpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Random _rnd = new Random();
         private const string FILE_NAME = @"data.json";
 
         private const double _diameter = 30;
@@ -29,6 +31,7 @@ namespace MinSpanTreeWpf
         private const int _fontSize = 12;
         private const int _edgeFontSize = 10;
 
+        private ObservableCollection<VLAN> _vlans = new ObservableCollection<VLAN>();
         private List<Node> _nodes = new List<Node>();
         private List<Edge> _edges = new List<Edge>();
         
@@ -41,6 +44,8 @@ namespace MinSpanTreeWpf
         public MainWindow()
         {
             InitializeComponent();
+
+            lbxVLANs.ItemsSource = _vlans;
 
             drawingCanvas.SetValue(Canvas.ZIndexProperty, 0);
         }
@@ -471,6 +476,15 @@ namespace MinSpanTreeWpf
             drawingCanvas.Children.Clear();
         }
 
+        private Color GetRandomColor()
+        {
+            byte r = Convert.ToByte(_rnd.Next(byte.MaxValue));
+            byte g = Convert.ToByte(_rnd.Next(byte.MaxValue));
+            byte b = Convert.ToByte(_rnd.Next(byte.MaxValue));
+
+            return Color.FromRgb(r, g, b);
+        }
+
         private void button_Click(object sender, RoutedEventArgs e)
         {
             Action<HashSet<int>> action = nodeIds =>
@@ -478,6 +492,7 @@ namespace MinSpanTreeWpf
                 var nodes = _nodes
                     .Where(p => nodeIds.Contains(p.NodeId))
                     .ToList();
+
                 var edges = _edges
                     .Where(p => nodeIds.Contains(p.FirstNode.NodeId) && nodeIds.Contains(p.SecondNode.NodeId))
                     .ToList();
@@ -488,23 +503,61 @@ namespace MinSpanTreeWpf
                     Edges = edges
                 });
 
-                foreach (Edge edge in mst)
+                foreach (var edge in mst)
                 {
                     PaintEdge(edge);
                     PaintNode(edge.FirstNode);
                     PaintNode(edge.SecondNode);
                 }
             };
+                        
 
-            _visitedBrush = new SolidColorBrush(Colors.Red);
-            action(new HashSet<int> {2, 5, 6, 7, 8});
+            foreach (var vlan in _vlans)
+            {
+                _visitedBrush = new SolidColorBrush(vlan.Color);
+                _offset += 2;
 
-            _offset = 3;
-
-            _visitedBrush = new SolidColorBrush(Colors.Chartreuse);
-            action(new HashSet<int> {1, 2, 3, 4});
+                action(new HashSet<int>(vlan.NodeIds));
+            }
 
             _offset = 0;
+        }
+
+        private void btnAddVLAN_Click(object sender, RoutedEventArgs e)
+        {
+            var wnd = new AddVLANDialogWindow();
+            wnd.Owner = this;
+
+            if (wnd.ShowDialog() == true)
+            {
+                string VLAN_IdsStr = (wnd.VLAN_IdsStr ?? string.Empty).Trim();
+
+                var nodeIds = VLAN_IdsStr
+                    .Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p =>
+                    {
+                        int id = 0;
+                        return int.TryParse(p, out id) ? id : 0;
+                    })
+                    .Where(p => p > 0)
+                    .Distinct()
+                    .OrderBy(p => p)
+                    .ToList();
+
+                if (nodeIds.Count > 2 && nodeIds.All(id => _nodes.Any(node => node.NodeId == id)))
+                {
+                    var vlan = new VLAN
+                    {
+                        Color = GetRandomColor()
+                    };
+                    vlan.NodeIds.AddRange(nodeIds);
+                    _vlans.Add(vlan);
+                }
+                else
+                {
+                    MessageBox.Show("Not valid node identifiers", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }                
+            };            
         }
 
         private void restartBtn_Click(object sender, RoutedEventArgs e)
