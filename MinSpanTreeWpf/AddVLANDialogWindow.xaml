@@ -1,9 +1,9 @@
 ﻿<Window x:Class="MinSpanTreeWpf.AddVLANDialogWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Enter Distance" Height="124" Width="270" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded">
+        Title="Enter VLAN" Height="124" Width="270" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded">
     <Grid>
-        <Label Content="Distance:" Height="28" HorizontalAlignment="Left" Margin="18,19,0,0" Name="label1" VerticalAlignment="Top" />
+        <Label Content="VLAN:" Height="28" HorizontalAlignment="Left" Margin="18,19,0,0" Name="label1" VerticalAlignment="Top" />
         <TextBox Height="23" Margin="79,21,12,0" Name="tbxVLANIds" TabIndex="1" VerticalAlignment="Top" />
         <Button Click="okBtn_Click" Content="OK" Height="23" HorizontalAlignment="Right" IsDefault="True" Margin="0,50,94,0" Name="okBtn" TabIndex="2" VerticalAlignment="Top" Width="75" />
         <Button Content="Cancel" Height="23" HorizontalAlignment="Right" IsCancel="True" Margin="0,50,12,0" Name="cancelBtn" TabIndex="3" VerticalAlignment="Top" Width="75" />

@@ -485,8 +485,10 @@ namespace MinSpanTreeWpf
             return Color.FromRgb(r, g, b);
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void btnFindVLANs_Click(object sender, RoutedEventArgs e)
         {
+            var results = new List<List<Edge>>();
+
             Action<HashSet<int>> action = nodeIds =>
             {
                 var nodes = _nodes
@@ -503,6 +505,8 @@ namespace MinSpanTreeWpf
                     Edges = edges
                 });
 
+                results.Add(mst);
+
                 foreach (var edge in mst)
                 {
                     PaintEdge(edge);
@@ -515,12 +519,51 @@ namespace MinSpanTreeWpf
             foreach (var vlan in _vlans)
             {
                 _visitedBrush = new SolidColorBrush(vlan.Color);
-                _offset += 2;
+                _offset += 3;
 
                 action(new HashSet<int>(vlan.NodeIds));
             }
 
             _offset = 0;
+
+            var resultEdges = results
+                .SelectMany(p => p)
+                .ToList();
+
+            var resultNodeIds = resultEdges
+                .Select(p => p.FirstNode)
+                .Concat(resultEdges.Select(p => p.SecondNode))
+                .GroupBy(p => p.NodeId)
+                .ToDictionary(p => p.Key, p => p.Count() > 1);
+
+            var nonUniqueNodeIds = resultNodeIds
+                .Where(p => p.Value)
+                .Select(p => p.Key)
+                .ToList();
+
+            var messages = new List<string>();
+
+            foreach (int nodeId in nonUniqueNodeIds)
+            {
+                foreach (var edge in resultEdges)
+                {
+                    if (edge.FirstNode.NodeId == nodeId || edge.SecondNode.NodeId == nodeId)
+                    {
+                        int secondNodeId = edge.FirstNode.NodeId == nodeId
+                            ? edge.SecondNode.NodeId
+                            : edge.FirstNode.NodeId;
+
+                        messages.Add(nonUniqueNodeIds.Contains(secondNodeId)
+                            ? $"Open on commutator '{nodeId}' trunk-port for node '{secondNodeId}'"
+                            : $"Open on commutator '{nodeId}' access-port for host '{secondNodeId}'");                        
+                    }                    
+                }
+            }
+
+            foreach (var msg in messages.Distinct())
+            {
+                lbxResults.Items.Add(msg);
+            }
         }
 
         private void btnAddVLAN_Click(object sender, RoutedEventArgs e)
